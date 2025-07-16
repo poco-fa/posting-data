@@ -40,5 +40,5 @@ app.get('/', (req, res) => {
 
 const port = parseInt(process.env.PORT) || 8080;
 app.listen(port, () => {
-  console.log(`helloworld: listening on port ${port}`);
+  console.log(`posting-data: listening on port ${port}`);
 });
