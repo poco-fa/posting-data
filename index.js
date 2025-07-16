@@ -5,7 +5,6 @@ import fs from 'fs';
 const app = express();
 app.use(express.json()); // JSONボディをパース
 
-/*
 // Google Sheets API認証
 const auth = new google.auth.GoogleAuth({
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
@@ -33,7 +32,6 @@ app.post('/add', async (req, res) => {
     res.status(500).send('登録に失敗しました');
   }
 });
-*/
 
 app.get('/', (req, res) => {
   const name = process.env.NAME || 'World!!';
