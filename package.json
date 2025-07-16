@@ -1,5 +1,5 @@
 {
-  "name": "helloworld",
+  "name": "posting-data",
   "description": "Simple hello world sample in Node",
   "version": "1.0.0",
   "private": true,
@@ -11,9 +11,10 @@
   "engines": {
     "node": ">=16.0.0"
   },
-  "author": "Google LLC",
+  "author": "heureka",
   "license": "Apache-2.0",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "googleapis": "^153.0.0"
   }
 }
