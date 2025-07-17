@@ -14,7 +14,7 @@
   "author": "heureka",
   "license": "Apache-2.0",
   "dependencies": {
-    "express": "^4.17.1",
-    "googleapis": "^153.0.0"
+    "@google-cloud/storage": "^7.16.0",
+    "express": "^4.17.1"
   }
 }
