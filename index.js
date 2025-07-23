@@ -45,6 +45,34 @@ app.post('/add', async (req, res) => {
   }
 });
 
+app.post('/get', async (req, res) => {
+  try {
+    const { name } = req.body;
+    let snapshot;
+    if (name) {
+      // nameが指定されている場合はフィルタ
+      const q = query(
+        dbRef(db, 'data'),
+        orderByChild('name'),
+        equalTo(name)
+      );
+      snapshot = await get(q);
+    } else {
+      // nameが指定されていない場合は全件取得
+      const dataRef = dbRef(db, 'data');
+      snapshot = await get(dataRef);
+    }
+    if (snapshot.exists()) {
+      res.json(snapshot.val());
+    } else {
+      res.json({});
+    }
+  } catch (err) {
+    console.error('Error getting data from Firebase:', err);
+    res.status(500).send('データ取得に失敗しました');
+  }
+});
+
 app.post('/', (req, res) => {
   const name = process.env.NAME || 'World!!';
   res.send(`Hello ${name}!`);
