@@ -1,6 +1,6 @@
 import express from 'express';
 import { initializeApp } from 'firebase/app';
-import { get, ref as dbRef, query, orderByChild, equalTo, getDatabase, push } from "firebase/database";
+import { get, ref as dbRef, query, orderByChild, equalTo, getDatabase, push, set } from "firebase/database";
 import path from 'path';
 
 const firebaseConfig = {
@@ -34,10 +34,10 @@ app.post('/add', async (req, res) => {
     return res.status(400).send('nameとvalueが必要です');
   }
   try {
-    const dataRef = dbRef(db, 'data');
+    const dataRef = dbRef(db, `data/${name}`);
 
-    const newData = { name, value, date: new Date().toISOString() };
-    await push(dataRef, newData);
+    const newData = { value, date: new Date().toISOString() };
+    await set(dataRef, newData);
     res.send('登録しました');
   } catch (err) {
     console.error('Error saving data to Firebase:', err);
