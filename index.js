@@ -1,6 +1,7 @@
 import express from 'express';
 import { initializeApp } from 'firebase/app';
 import { getDatabase,ref, push } from "firebase/database";
+import path from 'path';
 
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -17,7 +18,14 @@ const fb = initializeApp(firebaseConfig);
 const db = getDatabase(fb);
 
 const app = express();
-app.use(express.json()); // JSONボディをパース
+app.use(express.json());
+
+// Angularのビルド成果物を静的配信
+app.use(express.static(path.join(process.cwd(), '/dist')));
+// ルート以外のリクエストもindex.htmlを返す（SPA対応）
+app.get('*', (req, res) => {
+  res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
+});
 
 
 app.post('/add', async (req, res) => {
@@ -26,10 +34,10 @@ app.post('/add', async (req, res) => {
     return res.status(400).send('nameとvalueが必要です');
   }
   try {
-    const dataRef = ref(db, 'data'); // 修正
+    const dataRef = ref(db, 'data');
 
     const newData = { name, value, date: new Date().toISOString() };
-    await push(dataRef, newData);    // 修正
+    await push(dataRef, newData);
     res.send('登録しました');
   } catch (err) {
     console.error('Error saving data to Firebase:', err);
@@ -37,7 +45,7 @@ app.post('/add', async (req, res) => {
   }
 });
 
-app.get('/', (req, res) => {
+app.post('/', (req, res) => {
   const name = process.env.NAME || 'World!!';
   res.send(`Hello ${name}!`);
 });
