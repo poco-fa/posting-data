@@ -35,8 +35,8 @@ app.post('/add', async (req, res) => {
   }
   try {
     const dataRef = dbRef(db, `data/${name}`);
-
-    const newData = { value, date: new Date().toISOString() };
+    const now = new Date();
+    const newData = { value, date: now.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }) };
     await set(dataRef, newData);
     res.send('登録しました');
   } catch (err) {
