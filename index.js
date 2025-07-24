@@ -35,7 +35,7 @@ app.post('/add', async (req, res) => {
   }
   try {
     const now = new Date();
-    const date = now.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
+    const date = now.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }).replace(/[/\s:]/g, '');;
     const dataRef = dbRef(db, `data/${name}/${date}`);
     await set(dataRef, value);
     res.send('登録しました');
