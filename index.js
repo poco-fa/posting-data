@@ -29,15 +29,15 @@ app.get('*', (req, res) => {
 
 
 app.post('/add', async (req, res) => {
-  const { name, date, value } = req.body;
+  const { name, value } = req.body;
   if (!name || !value) {
     return res.status(400).send('nameとvalueが必要です');
   }
   try {
-    const dataRef = dbRef(db, `data/${name}/${date}`);
     const now = new Date();
-    const newData = { value, date: now.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }) };
-    await set(dataRef, newData);
+    const date = now.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
+    const dataRef = dbRef(db, `data/${name}/${date}`);
+    await set(dataRef, value);
     res.send('登録しました');
   } catch (err) {
     console.error('Error saving data to Firebase:', err);
