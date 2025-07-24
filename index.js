@@ -29,12 +29,12 @@ app.get('*', (req, res) => {
 
 
 app.post('/add', async (req, res) => {
-  const { name, value } = req.body;
+  const { name, date, value } = req.body;
   if (!name || !value) {
     return res.status(400).send('nameとvalueが必要です');
   }
   try {
-    const dataRef = dbRef(db, `data/${name}`);
+    const dataRef = dbRef(db, `data/${name}/${date}`);
     const now = new Date();
     const newData = { value, date: now.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }) };
     await set(dataRef, newData);
