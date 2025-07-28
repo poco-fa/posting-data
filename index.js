@@ -20,11 +20,22 @@ const db = getDatabase(fb);
 const app = express();
 app.use(express.json());
 
-// Angularのビルド成果物を静的配信
-app.use(express.static(path.join(process.cwd(), '/dist')));
+// User-Agentに基づいた静的ファイル配信
+app.use((req, res, next) => {
+  const userAgent = req.get('User-Agent') || '';
+  const isITUserAgent = userAgent.includes('IT');
+  const staticDir = isITUserAgent ? '/it' : '/dist';
+  
+  express.static(path.join(process.cwd(), staticDir))(req, res, next);
+});
+
 // ルート以外のリクエストもindex.htmlを返す（SPA対応）
 app.get('*', (req, res) => {
-  res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
+  const userAgent = req.get('User-Agent') || '';
+  const isITUserAgent = userAgent.includes('IT');
+  const staticDir = isITUserAgent ? 'it' : 'dist';
+  
+  res.sendFile(path.join(process.cwd(), staticDir, 'index.html'));
 });
 
 
