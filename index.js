@@ -18,7 +18,7 @@ const fb = initializeApp(firebaseConfig);
 const db = getDatabase(fb);
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 
 // User-Agentに基づいた静的ファイル配信
 app.use((req, res, next) => {
