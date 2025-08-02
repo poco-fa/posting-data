@@ -20,20 +20,18 @@ const db = getDatabase(fb);
 const app = express();
 app.use(express.json({ limit: '50mb' }));
 
-// User-Agentに基づいた静的ファイル配信
+// クエリー文字列に基づいた静的ファイル配信
 app.use((req, res, next) => {
-  const userAgent = req.get('User-Agent') || '';
-  const isITUserAgent = userAgent.includes('IT');
-  const staticDir = isITUserAgent ? '/it' : '/dist';
+  const isITMode = req.query.it === 'true' || req.query.it === '1';
+  const staticDir = isITMode ? '/it' : '/dist';
   
   express.static(path.join(process.cwd(), staticDir))(req, res, next);
 });
 
 // ルート以外のリクエストもindex.htmlを返す（SPA対応）
 app.get('*', (req, res) => {
-  const userAgent = req.get('User-Agent') || '';
-  const isITUserAgent = userAgent.includes('IT');
-  const staticDir = isITUserAgent ? 'it' : 'dist';
+  const isITMode = req.query.it === 'true' || req.query.it === '1';
+  const staticDir = isITMode ? 'it' : 'dist';
   
   res.sendFile(path.join(process.cwd(), staticDir, 'index.html'));
 });
