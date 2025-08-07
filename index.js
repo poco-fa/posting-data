@@ -3,6 +3,7 @@ import express from 'express';
 import { initializeApp } from 'firebase/app';
 import { get, ref as dbRef, query, orderByChild, equalTo, getDatabase, push, set, orderByKey, startAt } from "firebase/database";
 import path from 'path';
+import cors from 'cors';
 
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -19,6 +20,15 @@ const fb = initializeApp(firebaseConfig);
 const db = getDatabase(fb);
 
 const app = express();
+
+// .envに CORS_ORIGIN を設定した場合のみCORSを有効化
+const corsOrigin = process.env.CORS_ORIGIN;
+if (corsOrigin) {
+  app.use(cors({
+    origin: corsOrigin
+  }));
+}
+
 app.use(express.json({ limit: '50mb' }));
 
 // クエリー文字列に基づいた静的ファイル配信
