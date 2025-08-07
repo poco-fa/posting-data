@@ -1,6 +1,7 @@
+import 'dotenv/config';
 import express from 'express';
 import { initializeApp } from 'firebase/app';
-import { get, ref as dbRef, query, orderByChild, equalTo, getDatabase, push, set } from "firebase/database";
+import { get, ref as dbRef, query, orderByChild, equalTo, getDatabase, push, set, orderByKey, startAt } from "firebase/database";
 import path from 'path';
 
 const firebaseConfig = {
@@ -67,28 +68,50 @@ app.post('/add', async (req, res) => {
 
 app.post('/get', async (req, res) => {
   try {
-    const { name } = req.body;
-    const dataRef = dbRef(db, 'data');
-    const snapshot = await get(dataRef);
+    const { name, date } = req.body;
 
-    if (!snapshot.exists()) {
-      return res.json({});
-    }
+    if (name && date) {
+      // nameとdate両方指定 → 指定nameのdate以降
+      const q = query(
+        dbRef(db, `data/${name}`),
+        orderByKey(),
+        startAt(date)
+      );
+      const snapshot = await get(q);
+      if (!snapshot.exists()) return res.json({});
+      return res.json({ [name]: snapshot.val() });
 
-    const allData = snapshot.val();
-    let filtered = {};
+    } else if (name) {
+      // nameのみ指定 → 指定nameの全件
+      const dataRef = dbRef(db, `data/${name}`);
+      const snapshot = await get(dataRef);
+      if (!snapshot.exists()) return res.json({});
+      return res.json({ [name]: snapshot.val() });
 
-    if (name) {
-      // nameプロパティが一致するものだけ返す
-      Object.entries(allData).forEach(([key, value]) => {
-        if (value && value.name === name) {
-          filtered[key] = value;
-        }
-      });
-      return res.json(filtered);
+    } else if (date) {
+      // dateのみ指定 → 全nameのdate以降
+      const dataRef = dbRef(db, 'data');
+      const usersSnapshot = await get(dataRef);
+      if (!usersSnapshot.exists()) return res.json({});
+      const usersData = usersSnapshot.val();
+      const result = {};
+      for (const n in usersData) {
+        const q = query(
+          dbRef(db, `data/${n}`),
+          orderByKey(),
+          startAt(date)
+        );
+        const snap = await get(q);
+        if (snap.exists()) result[n] = snap.val();
+      }
+      return res.json(result);
+
     } else {
-      // 全件返す
-      return res.json(allData);
+      // 無指定 → 全件
+      const dataRef = dbRef(db, 'data');
+      const snapshot = await get(dataRef);
+      if (!snapshot.exists()) return res.json({});
+      return res.json(snapshot.val());
     }
   } catch (err) {
     console.error('Error getting data from Firebase:', err);
