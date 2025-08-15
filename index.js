@@ -134,6 +134,17 @@ app.post('/', (req, res) => {
   res.send(`Hello ${name}!`);
 });
 
+app.post('/test-firebase', async (req, res) => {
+  try {
+    const testRef = dbRef(db, '/'); // ルート参照
+    const snapshot = await get(testRef);
+    res.json({ success: true, data: snapshot.val() });
+  } catch (err) {
+    console.error('Firebase接続エラー:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 const port = parseInt(process.env.PORT) || 8080;
 app.listen(port, () => {
   console.log(`posting-data: listening on port ${port}`);
